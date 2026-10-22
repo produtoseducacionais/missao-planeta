@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#123a39" />
+  <meta name="description" content="Missão Planeta: jogo educativo de sustentabilidade com 10 perguntas para o 7º ano." />
+  <title>Missão Planeta | Jogo de Sustentabilidade</title>
+  <style>
+    :root { --bg:#ecf8f1; --ink:#153333; --muted:#496161; --primary:#126b53; --primary-dark:#084b3b; --yellow:#ffe28a; --pink:#ffcad4; --card:#fff; --border:#beddd0; --correct:#d7f5e5; --wrong:#ffe0df; --focus:#a94df5; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background: radial-gradient(circle at 10% 0%, #d9f5dc 0, transparent 30%), radial-gradient(circle at 96% 12%, #d9ecff 0, transparent 34%), var(--bg); font: 500 16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif; min-height:100vh; }
+    button { font:inherit; cursor:pointer; }
+    button:focus-visible { outline:4px solid var(--focus); outline-offset:4px; }
+    .wrap { max-width:900px; margin:auto; padding:24px 16px 50px; }
+    header { display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:24px; }
+    .brand { display:flex; align-items:center; gap:11px; font-weight:900; font-size:clamp(1.2rem,4vw,1.6rem); letter-spacing:-.03em; }
+    .logo { display:grid; place-items:center; width:49px; height:49px; border-radius:16px; background:#123a39; color:white; font-size:26px; }
+    .tag { padding:7px 12px; background:#fff; border:1px solid var(--border); border-radius:999px; font-size:.85rem; font-weight:800; }
+    main { background:var(--card); border:2px solid var(--border); border-radius:28px; box-shadow:0 14px 36px #0f473017; padding:clamp(20px,5vw,42px); }
+    .hidden { display:none !important; }
+    .eyebrow { display:inline-flex; align-items:center; gap:7px; font-size:.8rem; font-weight:900; letter-spacing:.1em; text-transform:uppercase; color:#155c4b; }
+    h1 { font-size:clamp(2.1rem,6.4vw,3.7rem); line-height:1.12; letter-spacing:-.06em; margin:12px 0 18px; }
+    h2 { font-size:clamp(1.45rem,4.5vw,2.15rem); line-height:1.22; letter-spacing:-.035em; margin:16px 0 24px; }
+    p { margin:0 0 18px; }
+    .lead { font-size:clamp(1rem,2.5vw,1.2rem); max-width:62ch; color:var(--muted); }
+    .hero { background:linear-gradient(120deg,#d6f7df,#e2f4ff); border-radius:24px; padding:24px; margin:24px 0; display:flex; justify-content:space-between; align-items:center; gap:18px; }
+    .hero strong { font-size:1.2rem; }
+    .hero-art { font-size:clamp(3rem,12vw,5rem); line-height:1; flex-shrink:0; }
+    .button { border:0; border-radius:15px; padding:15px 23px; min-height:52px; background:var(--primary); color:#fff; font-weight:900; transition:transform .15s, background .15s; }
+    .button:hover { background:var(--primary-dark); transform:translateY(-1px); }
+    .button.secondary { background:#e8f3ef; color:#134f40; }
+    .button.secondary:hover { background:#d5e9e1; }
+    .button:disabled { opacity:.55; cursor:not-allowed; transform:none; }
+    .center { text-align:center; }
+    .metrics { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:15px; font-weight:900; flex-wrap:wrap; }
+    .score { background:#fff2bb; border-radius:30px; padding:8px 13px; }
+    .progress { height:14px; background:#e4efeb; border-radius:999px; overflow:hidden; margin-bottom:30px; }
+    .bar { height:100%; width:0; background:#19a77b; transition:width .35s ease; }
+    .category { color:#126b53; font-weight:900; }
+    .answers { display:grid; gap:12px; }
+    .choice { width:100%; display:flex; align-items:flex-start; text-align:left; gap:14px; border:2px solid #bddbce; color:var(--ink); background:#fff; border-radius:16px; padding:16px; font-weight:750; min-height:65px; transition:border-color .15s, background .15s; }
+    .choice:not(:disabled):hover { background:#effaf4; border-color:#16765d; }
+    .letter { background:#e1f2e8; color:#135844; flex-shrink:0; width:30px; height:30px; border-radius:9px; display:grid; place-items:center; font-weight:900; }
+    .choice.correct { border-color:#168453; background:var(--correct); }
+    .choice.incorrect { border-color:#c34747; background:var(--wrong); }
+    .choice:disabled { cursor:default; }
+    .choice:disabled:not(.correct):not(.incorrect) { opacity:.7; }
+    .feedback { margin-top:23px; padding:18px 20px; border-radius:17px; border:2px solid #91cfb1; background:#e9fff1; }
+    .feedback.error { border-color:#efa2a0; background:#fff0ed; }
+    .feedback strong { font-size:1.11rem; }
+    .feedback p { margin:8px 0 0; }
+    .actions { display:flex; margin-top:22px; justify-content:flex-end; }
+    .result-icon { font-size:4.6rem; margin:10px 0; }
+    .bigscore { font-size:clamp(3rem,9vw,5rem); font-weight:950; line-height:1.1; color:var(--primary); letter-spacing:-.06em; }
+    .result-details { text-align:left; border-radius:18px; background:#eff8f3; padding:20px; margin:24px 0; }
+    .result-details h3 { margin:0 0 9px; }
+    .result-details ul { margin:0; padding-left:20px; }
+    footer { text-align:center; margin:22px 0 0; font-size:.85rem; color:#496161; }
+    @media (max-width:530px) { .tag { display:none; } .hero { padding:17px; } .hero-art { font-size:3rem; } .wrap { padding-top:16px; } .button { width:100%; } .actions { display:block; } }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none !important; animation:none !important; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand"><span class="logo" aria-hidden="true">🌎</span><span>Missão Planeta</span></div>
+      <span class="tag">🌱 Sustentabilidade • 7º ano</span>
+    </header>
+    <main>
+      <section id="welcome" aria-labelledby="welcome-title">
+        <span class="eyebrow">🌿 Aprender para transformar</span>
+        <h1 id="welcome-title">O planeta precisa das suas escolhas!</h1>
+        <p class="lead">Teste seus conhecimentos sobre água, energia, resíduos, biodiversidade e consumo consciente. Cada resposta é uma chance de aprender!</p>
+        <div class="hero"><div><strong>🎯 Sua missão</strong><p style="margin:8px 0 0">Responda a 10 perguntas, marque pontos e descubra como ajudar a Terra.</p></div><div class="hero-art" aria-hidden="true">🌳💧</div></div>
+        <p><strong>Como jogar:</strong> escolha uma das quatro alternativas. Você receberá uma explicação antes de avançar. Cada acerto vale 10 pontos, totalizando até 100.</p>
+        <button id="start" class="button">Começar missão →</button>
+      </section>
+      <section id="game" class="hidden" aria-labelledby="question-title">
+        <div class="metrics"><span id="counter">Pergunta 1 de 10</span><span id="score" class="score">⭐ 0 pontos</span></div>
+        <div class="progress" role="progressbar" aria-label="Progresso do jogo" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0" id="progress"><div class="bar" id="bar"></div></div>
+        <div id="category" class="category"></div>
+        <h2 id="question-title" tabindex="-1"></h2>
+        <div id="answers" class="answers" role="group" aria-label="Alternativas de resposta"></div>
+        <div id="feedback" class="feedback hidden" role="status" aria-live="polite"></div>
+        <div class="actions"><button id="next" class="button hidden">Próxima pergunta →</button></div>
+      </section>
+      <section id="results" class="hidden center" aria-labelledby="results-title">
+        <span class="eyebrow">🏆 Missão concluída</span>
+        <div id="result-icon" class="result-icon" aria-hidden="true">🌍</div>
+        <h1 id="results-title">Seu resultado</h1>
+        <div class="bigscore" id="final-score">0/100</div>
+        <p id="summary" class="lead" style="margin:16px auto"></p>
+        <div class="result-details"><h3>🌱 Três ações para continuar a missão</h3><ul><li>Evite desperdícios de água e energia.</li><li>Reduza o consumo e reutilize materiais sempre que possível.</li><li>Compartilhe com a turma o que aprendeu sobre sustentabilidade.</li></ul></div>
+        <button id="restart" class="button">↻ Jogar novamente</button>
+      </section>
+    </main>
+    <footer>Jogo educativo • Funciona offline • Sem cadastro e sem coleta de dados</footer>
+  </div>
+  <script>
+    'use strict';
+    const questions = [
+      {category:'💧 Água', q:'Qual atitude ajuda mais a economizar água em casa?', options:['Deixar a torneira aberta ao escovar os dentes','Tomar banhos longos todos os dias','Fechar a torneira enquanto escova os dentes','Lavar a calçada diariamente com mangueira'], answer:2, explain:'Fechar a torneira evita desperdício de água tratada. Pequenas atitudes repetidas todos os dias fazem diferença.'},
+      {category:'♻️ Resíduos', q:'O que significa a ideia dos 3 Rs da sustentabilidade?', options:['Reduzir, reutilizar e reciclar','Retirar, rasgar e refazer','Recolher, replantar e remover','Recusar, repetir e repassar'], answer:0, explain:'Os 3 Rs são reduzir o consumo e a geração de lixo, reutilizar objetos e reciclar materiais quando possível.'},
+      {category:'⚡ Energia', q:'Qual destas é uma fonte de energia renovável?', options:['Carvão mineral','Petróleo','Gás natural','Energia solar'], answer:3, explain:'A energia solar utiliza a radiação do Sol, que se renova naturalmente. Carvão, petróleo e gás natural são combustíveis fósseis.'},
+      {category:'🌳 Biodiversidade', q:'Por que preservar florestas é importante?', options:['Porque todas as florestas têm as mesmas espécies','Porque protegem espécies, solos e recursos hídricos','Porque impedem toda mudança no clima','Porque eliminam a necessidade de reciclar'], answer:1, explain:'As florestas abrigam seres vivos, ajudam a proteger os solos, participam do ciclo da água e armazenam carbono.'},
+      {category:'🛍️ Consumo consciente', q:'Antes de comprar um objeto novo, qual pergunta é mais sustentável?', options:['É o produto da moda?','Será que posso comprar dois?','Eu realmente preciso dele?','A embalagem é a maior da loja?'], answer:2, explain:'Refletir sobre a necessidade real reduz compras impulsivas, uso de recursos e produção de resíduos.'},
+      {category:'🍌 Resíduos orgânicos', q:'Qual resíduo geralmente pode ser usado na compostagem doméstica?', options:['Casca de banana','Pilha usada','Lâmpada quebrada','Embalagem de plástico'], answer:0, explain:'Cascas de frutas e outros resíduos orgânicos adequados podem se transformar em composto para o solo. Pilhas e lâmpadas exigem descarte específico.'},
+      {category:'🚲 Mobilidade', q:'Em um trajeto curto e seguro, qual escolha costuma causar menos poluição do ar?', options:['Ir de carro sozinho','Usar motocicleta','Pedir uma corrida de carro','Ir a pé ou de bicicleta'], answer:3, explain:'Caminhar ou pedalar não gera emissões diretas de gases pelo deslocamento e ainda favorece a atividade física.'},
+      {category:'🌎 Mudanças climáticas', q:'Qual atividade humana aumenta a concentração de gases de efeito estufa na atmosfera?', options:['Cultivar árvores em áreas adequadas','Queimar combustíveis fósseis','Consertar objetos quebrados','Economizar eletricidade'], answer:1, explain:'A queima de carvão, petróleo e gás libera dióxido de carbono (CO₂), contribuindo para o aquecimento global.'},
+      {category:'🐝 Ecossistemas', q:'Como abelhas e outros polinizadores ajudam o meio ambiente?', options:['Transformando plástico em adubo','Produzindo toda a água da chuva','Transportando pólen e ajudando na reprodução de plantas','Impedindo a decomposição de folhas'], answer:2, explain:'A polinização favorece a reprodução de muitas plantas, inclusive espécies importantes para a alimentação.'},
+      {category:'🏫 Ação coletiva', q:'Qual projeto escolar reúne atitudes sustentáveis?', options:['Criar coleta seletiva, evitar desperdícios e cuidar de uma horta','Imprimir toda atividade várias vezes sem necessidade','Usar copos descartáveis em todos os recreios','Deixar luzes acesas nas salas vazias'], answer:0, explain:'Ações coletivas na escola combinam redução de resíduos, uso responsável de recursos e cuidado com a natureza.'}
+    ];
+    const $ = id => document.getElementById(id);
+    const sections = ['welcome','game','results'];
+    let index = 0, points = 0, answered = false;
+    function showSection(id) { sections.forEach(s => $(s).classList.toggle('hidden', s !== id)); }
+    function start() { index = 0; points = 0; showSection('game'); render(); }
+    function render() {
+      answered = false;
+      const item = questions[index];
+      $('counter').textContent = `Pergunta ${index+1} de ${questions.length}`;
+      $('score').textContent = `⭐ ${points} pontos`;
+      $('progress').setAttribute('aria-valuenow', String(index));
+      $('bar').style.width = `${index / questions.length * 100}%`;
+      $('category').textContent = item.category;
+      $('question-title').textContent = item.q;
+      $('answers').replaceChildren();
+      item.options.forEach((answer, i) => {
+        const btn = document.createElement('button');
+        btn.type = 'button'; btn.className = 'choice';
+        btn.innerHTML = `<span class="letter" aria-hidden="true">${'ABCD'[i]}</span>`;
+        const span = document.createElement('span'); span.textContent = answer; btn.append(span);
+        btn.setAttribute('aria-label', `Alternativa ${'ABCD'[i]}: ${answer}`);
+        btn.addEventListener('click', () => choose(i));
+        $('answers').append(btn);
+      });
+      $('feedback').className = 'feedback hidden';
+      $('feedback').replaceChildren();
+      $('next').classList.add('hidden');
+      $('next').textContent = index === questions.length - 1 ? 'Ver resultado →' : 'Próxima pergunta →';
+      $('question-title').focus();
+    }
+    function choose(selected) {
+      if (answered) return;
+      answered = true;
+      const item = questions[index];
+      const correct = selected === item.answer;
+      if (correct) points += 10;
+      $('score').textContent = `⭐ ${points} pontos`;
+      [...$('answers').children].forEach((btn, i) => {
+        btn.disabled = true;
+        if (i === item.answer) btn.classList.add('correct');
+        if (i === selected && !correct) btn.classList.add('incorrect');
+      });
+      const feedback = $('feedback');
+      feedback.className = `feedback${correct ? '' : ' error'}`;
+      const heading = document.createElement('strong');
+      heading.textContent = correct ? '✅ Muito bem! +10 pontos' : `💡 Ainda não! Resposta correta: ${'ABCD'[item.answer]}`;
+      const explanation = document.createElement('p'); explanation.textContent = item.explain;
+      feedback.append(heading,explanation);
+      $('progress').setAttribute('aria-valuenow', String(index+1));
+      $('bar').style.width = `${(index+1)/questions.length*100}%`;
+      $('next').classList.remove('hidden');
+      $('next').focus();
+    }
+    function finish() {
+      showSection('results');
+      const correctCount = points/10;
+      $('final-score').textContent = `${points}/100`;
+      $('result-icon').textContent = points >= 80 ? '🏆🌍' : points >= 50 ? '🌿🌎' : '🌱💚';
+      $('summary').textContent = points >= 80
+        ? `Você acertou ${correctCount} de 10 perguntas! Excelente! Continue inspirando outras pessoas a cuidar do planeta.`
+        : points >= 50
+          ? `Você acertou ${correctCount} de 10 perguntas! Muito bom! Reveja as explicações e siga colocando suas ideias em prática.`
+          : `Você acertou ${correctCount} de 10 perguntas. Toda aprendizagem começa com uma tentativa! Jogue novamente e descubra mais.`;
+      $('results-title').focus?.();
+    }
+    $('start').addEventListener('click',start);
+    $('restart').addEventListener('click',start);
+    $('next').addEventListener('click', () => { if (!answered) return; index++; if (index < questions.length) render(); else finish(); });
+  </script>
+</body>
+</html>
